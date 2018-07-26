@@ -1,0 +1,249 @@
+{
+  "ApplicationName": "factcheck",
+  "DisplayName": "K4Q",
+  "Description": "An application to curate, score and publish articles",
+  "ApplicationRoles": [
+    {
+      "Name": "Author",
+      "Description": "A person publishing the article."
+    },
+    {
+      "Name": "Admin",
+      "Description": "A person curating the article."
+    },
+    {
+      "Name": "Subscriber",
+      "Description": "A person subscribing to the article."
+    },
+    {
+      "Name": "Banker",
+      "Description" :  "Agent to perform bank transactions."
+    }
+  ],
+  "Workflows": [
+    {
+      "Name": "PublishArticle",
+      "DisplayName": "Publish Article",
+      "Description": "A simple workflow to publish an article to .",
+      "Initiators": [ "Author" ],
+      "StartState": "Nominated",
+      "Properties": [
+        {
+          "Name": "State",
+          "DisplayName": "State",
+          "Description": "Holds the state of the contract.",
+          "Type": {
+            "Name": "state"
+          }
+        },
+        {
+          "Name": "Author",
+          "DisplayName": "Author",
+          "Description": "A person publishing the article.",
+          "Type": {
+            "Name": "Author"
+          }
+        },
+        {
+          "Name": "Admin",
+          "DisplayName": "Admin",
+          "Description": "A person curating the article.",
+          "Type": {
+            "Name": "Admin"
+          }
+        },
+        {
+          "Name": "ArticleTitle",
+          "DisplayName": "Article Title",
+          "Description": "Title of the article",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "ArticleUrl",
+          "DisplayName": "Article Url",
+          "Description": "Article URL",
+          "Type": {
+            "Name": "string"
+          }
+        }
+      ],
+      "Constructor": {
+        "Parameters": [
+          {
+          "Name": "articleTitle",
+          "DisplayName": "Article Title",
+          "Description": "Title of the article",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "articleUrl",
+          "DisplayName": "Article URL",
+          "Description": "Article Url",
+          "Type": {
+            "Name": "string"
+          }
+        }
+        ]
+      },
+      "Functions": [
+        {
+          "Name": "SendArticle",
+          "DisplayName": "Send Article",
+          "Description": "Publishing requesting for a review of the article",
+          "Parameters": [
+                      {
+          "Name": "articleTitle",
+          "DisplayName": "Article Title",
+          "Description": "Title of the article",
+          "Type": {
+            "Name": "string"
+          }
+        },
+        {
+          "Name": "articleUrl",
+          "DisplayName": "Article URL",
+          "Description": "Article Url",
+          "Type": {
+            "Name": "string"
+          }
+        }
+          ]
+        },
+        {
+          "Name": "AcceptReview",
+          "DisplayName": "Accept Review",
+          "Description": "Admin sending result of the review",
+          "Parameters": [ ]
+        },
+        {
+          "Name": "RejectReview",
+          "DisplayName": "Reject Review",
+          "Description": "Admin sending result of the review",
+          "Parameters": []
+        },
+        {
+          "Name": "RejectScore",
+          "DisplayName": "Reject Score of the review",
+          "Description": "Admin sending result of the review",
+          "Parameters": []
+        },
+        {
+          "Name": "ReadArticle",
+          "DisplayName": "Read Article",
+          "Description": "Subscriber reads the article",
+          "Parameters": []
+        },
+        {
+          "Name": "PayAuthor",
+          "DisplayName": "Pay Author",
+          "Description": "Banker pays the author of the article",
+          "Parameters": []
+        }
+      ],
+      "States": [
+        {
+          "Name": "Nominated",
+          "DisplayName": "Article Review Requested",
+          "Description": "Review in progress",
+          "PercentComplete": 25,
+          "Value": 0,
+          "Style": "Success",
+          "Transitions": [
+            {
+              "AllowedRoles": [ "Admin" ],
+              "AllowedInstanceRoles": [ ],
+              "Description": "...",
+              "Function": "AcceptReview",
+              "NextStates": [ "Score_Passed" ],
+              "DisplayName": "Score_Passed"
+            },
+            {
+              "AllowedRoles": ["Admin"],
+              "AllowedInstanceRoles": [],
+              "Description": "...",
+              "Function": "RejectReview",
+              "NextStates": [ "Score_Failed" ],
+              "DisplayName": "Score_Failed"
+            }
+          ]
+        },
+        {
+          "Name": "Score_Passed",
+          "DisplayName": "Score_Passed",
+          "Description": "Article accepted after review",
+          "PercentComplete": 50,
+          "Value": 1,
+          "Style": "Success",
+          "Transitions": [
+            {
+              "AllowedRoles": [ "Subscriber" ],
+              "AllowedInstanceRoles": [ ],
+              "Description": "...",
+              "Function": "ReadArticle",
+              "NextStates": [ "Read" ],
+              "DisplayName": "Read"
+            }
+          ]
+        },
+        {
+          "Name": "Score_Failed",
+          "DisplayName": "Score_Failed",
+          "Description": "Article did not meet the scoring criteria",
+          "PercentComplete": 100,
+          "Value": 1,
+          "Style": "Failure",
+          "Transitions": []
+        },
+        {
+          "Name": "Review_Denied",
+          "DisplayName": "Review_Denied",
+          "Description": "Article did not meet the review criteria",
+          "PercentComplete": 100,
+          "Value": 1,
+          "Style": "Failure",
+          "Transitions": []
+        },
+        {
+          "Name": "Read",
+          "DisplayName": "Read",
+          "Description": "Article has been read",
+          "PercentComplete": 90,
+          "Value": 1,
+          "Style": "Success",
+          "Transitions": [
+            {
+              "AllowedRoles": [ "Banker" ],
+              "AllowedInstanceRoles": [ ],
+              "Description": "...",
+              "Function": "PayAuthor",
+              "NextStates": [ "ReadPaid" ],
+              "DisplayName": "ReadPaid"
+            }
+          ]
+        },
+        {
+          "Name": "ReadPaid",
+          "DisplayName": "ReadPaid",
+          "Description": "The author has been paid",
+          "PercentComplete": 100,
+          "Value": 1,
+          "Style": "Success",
+          "Transitions": [
+              {
+              "AllowedRoles": [ "Subscriber" ],
+              "AllowedInstanceRoles": [ ],
+              "Description": "...",
+              "Function": "ReadArticle",
+              "NextStates": [ "Read" ],
+              "DisplayName": "Read"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
